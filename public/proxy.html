@@ -5,12 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Google Docs</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@titaniumnetwork-dev/ultraviolet@3.2.7/dist/uv.bundle.js" defer></script>
+  <script src="/uv/uv.config.js" defer></script>
   <script src="/js/stealth.js" defer></script>
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen bg-gray-950 p-6 text-white">
   <div class="max-w-xl w-full p-8 bg-gray-900 rounded-2xl border border-gray-800 shadow-2xl">
-    <h1 class="text-3xl font-bold text-center mb-2">Unblockable Web Portal</h1>
-    <p class="text-gray-400 text-center text-sm mb-8">Wisp WebSocket Tunnel + Ultraviolet Engine</p>
+    <h1 class="text-3xl font-bold text-center mb-2">THE-VAULT-STATIC Portal</h1>
+    <p class="text-gray-400 text-center text-sm mb-8">Wisp Tunnel + Local UV Engine Active</p>
 
     <form id="proxy-form" class="space-y-4">
       <input 
@@ -24,7 +26,7 @@
         type="submit"
         class="w-full py-4 bg-emerald-600 hover:bg-emerald-500 rounded-lg font-semibold transition-colors shadow-lg shadow-emerald-950/50"
       >
-        Launch Stealth Session
+        Launch Secure Session
       </button>
     </form>
 
@@ -40,13 +42,15 @@
       window.location.replace('/index.html');
     }
 
-    function encodeUrl(str) {
-      return encodeURIComponent(
-        str.split('').map((char, ind) => 
-          ind % 2 ? String.fromCharCode(char.charCodeAt(0) ^ 2) : char
-        ).join('')
-      );
-    }
+    window.addEventListener('load', async () => {
+      if ('serviceWorker' in navigator) {
+        try {
+          await navigator.serviceWorker.register('/uv/uv.sw.js', { scope: __uv$config.prefix });
+        } catch (err) {
+          console.error('Service worker registration error:', err);
+        }
+      }
+    });
 
     document.getElementById('proxy-form').addEventListener('submit', (e) => {
       e.preventDefault();
@@ -54,7 +58,7 @@
       if (!/^http(s?):\/\//.test(target)) {
         target = `https://www.google.com/search?q=${target}`;
       }
-      const proxiedUrl = `/uv/service/${encodeUrl(target)}`;
+      const proxiedUrl = __uv$config.prefix + __uv$config.encodeUrl(target);
       launchStealthMode(proxiedUrl);
     });
   </script>
