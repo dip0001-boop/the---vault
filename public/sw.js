@@ -1,30 +1,15 @@
-const CACHE_NAME = 'the-vault-static-v1';
-const ASSETS_TO_CACHE = [
-  '/index.html',
-  '/proxy.html',
-  '/games.html',
-  '/js/stealth.js',
-  '/manifest.json'
-];
+importScripts('/uv/uv.bundle.js');
+importScripts('/uv/uv.config.js');
+importScripts(__uv$config.sw);
 
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE))
-  );
-  self.skipWaiting();
-});
-
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) => Promise.all(
-      keys.map((key) => { if (key !== CACHE_NAME) return caches.delete(key); })
-    ))
-  );
-  self.clients.claim();
-});
+const uv = new UVServiceWorker();
 
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request).then((cached) => cached || fetch(event.request).catch(() => caches.match('/index.html')))
-  );
+    if (event.request.url.startsWith(location.origin + __uv$config.prefix)) {
+        event.respondWith(uv.fetch(event));
+    } else {
+        event.respondWith(
+            caches.match(event.request).then((cached) => cached || fetch(event.request))
+        );
+    }
 });
