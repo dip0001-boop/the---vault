@@ -54,7 +54,7 @@
 
     document.getElementById('proxy-form').addEventListener('submit', (e) => {
       e.preventDefault();
-      let target = document.getElementById('url-input').value.trim();
+      let target = document.getElementById('url-input'].value.trim();
       if (!/^http(s?):\/\//.test(target)) {
         target = `https://www.google.com/search?q=${target}`;
       }
