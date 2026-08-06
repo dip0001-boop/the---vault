@@ -1,6 +1,6 @@
 {
-  "name": "the-vault-ultimate",
-  "version": "4.0.0",
+  "name": "the-vault-static",
+  "version": "10.5.0",
   "private": true,
   "scripts": {
     "start": "node server.js"
