@@ -6,7 +6,8 @@ import { createBareServer } from '@tomphttp/bare-server-node';
 import wisp from 'wisp-server-node';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
-const publicDir = join(__dirname, 'public');
+// Adjust public folder reference to match standard structure
+const publicDir = join(__dirname, '');
 
 const app = express();
 const server = createServer(app);
@@ -27,7 +28,7 @@ app.post('/api/verify', (req, res) => {
   }
 });
 
-// Fallback to index for client-side routing
+// Fallback route for client-side navigation
 app.get('*', (req, res) => {
   res.sendFile(join(publicDir, 'index.html'));
 });
@@ -42,7 +43,7 @@ server.on('request', (req, res) => {
 });
 
 server.on('upgrade', (req, socket, head) => {
-  if (req.url.endsWith('/wisp/')) {
+  if (req.url.endsWith('/wisp/') || req.url.startsWith('/wisp')) {
     wisp.routeRequest(req, socket, head);
   } else if (bareServer.shouldRoute(req)) {
     bareServer.routeUpgrade(req, socket, head);
@@ -52,5 +53,5 @@ server.on('upgrade', (req, socket, head) => {
 });
 
 server.listen(port, () => {
-  console.log(`> THE-VAULT-STATIC Engine running on port ${port}`);
+  console.log(`> THE-VAULT Engine running on port ${port}`);
 });
