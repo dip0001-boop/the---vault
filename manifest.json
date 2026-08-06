@@ -1,0 +1,15 @@
+{
+  "name": "The Vault",
+  "short_name": "Vault",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#030712",
+  "theme_color": "#059669",
+  "icons": [
+    {
+      "src": "https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Drive - Shared Workspace</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/js/stealth.js" defer></script>
+</head>
+<body class="min-h-screen bg-gray-950 text-white p-6 md:p-12">
+  <div class="max-w-7xl mx-auto">
+    <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+      <div>
+        <h1 class="text-4xl font-black text-emerald-400 tracking-wider">THE VAULT GAMES</h1>
+        <p class="text-gray-400 text-sm mt-1">High-Performance Unblocked Web Applications</p>
+      </div>
+      <div class="flex gap-3 w-full md:w-auto">
+        <input
+          type="text"
+          id="search-input"
+          placeholder="Search games..."
+          class="w-full md:w-80 px-4 py-3 bg-gray-900 border border-gray-800 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
+        />
+        <a href="/proxy.html" class="px-5 py-3 bg-gray-900 border border-gray-800 hover:bg-gray-800 text-emerald-400 rounded-xl font-semibold transition-colors flex items-center justify-center">Proxy</a>
+      </div>
+    </div>
+
+    <div id="category-filters" class="flex flex-wrap gap-2 mb-8">
+      <button data-cat="All" class="cat-btn px-4 py-2 rounded-lg text-sm font-semibold transition-colors bg-emerald-600 text-white shadow-lg">All</button>
+      <button data-cat="Action" class="cat-btn px-4 py-2 rounded-lg text-sm font-semibold transition-colors bg-gray-900 text-gray-400 hover:bg-gray-800">Action</button>
+      <button data-cat="Puzzle" class="cat-btn px-4 py-2 rounded-lg text-sm font-semibold transition-colors bg-gray-900 text-gray-400 hover:bg-gray-800">Puzzle</button>
+      <button data-cat="Arcade" class="cat-btn px-4 py-2 rounded-lg text-sm font-semibold transition-colors bg-gray-900 text-gray-400 hover:bg-gray-800">Arcade</button>
+      <button data-cat="Sports" class="cat-btn px-4 py-2 rounded-lg text-sm font-semibold transition-colors bg-gray-900 text-gray-400 hover:bg-gray-800">Sports</button>
+    </div>
+
+    <div id="games-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+  </div>
+
+  <script>
+    if (localStorage.getItem('vault_unlocked') !== 'true') {
+      window.location.replace('/index.html');
+    }
+
+    const verifiedGames = [
+      { id: '1', title: 'Slope', category: 'Action', description: 'High-speed 3D ball rolling challenge.', embedUrl: 'https://www.retrogames.cc/embed/42318-slope.html' },
+      { id: '2', title: 'Retro Bowl', category: 'Sports', description: 'Classic football management simulation.', embedUrl: 'https://retrobowl.me/' },
+      { id: '3', title: 'Cookie Clicker', category: 'Arcade', description: 'The timeless incremental cookie baking game.', embedUrl: 'https://orteil.dashnet.org/cookieclicker/' },
+      { id: '4', title: '2048', category: 'Puzzle', description: 'Combine tiles to reach the 2048 objective.', embedUrl: 'https://play2048.co/' },
+      { id: '5', title: 'Tetris', category: 'Arcade', description: 'Classic block stacking puzzle strategy.', embedUrl: 'https://tetris.com/play-tetris' },
+      { id: '6', title: 'Paper.io 2', category: 'Action', description: 'Capture territory and expand your block.', embedUrl: 'https://paper-io.com/' }
+    ];
+
+    let currentCategory = 'All';
+    let searchQuery = '';
+    const gridEl = document.getElementById('games-grid');
+
+    function renderGames() {
+      const filtered = verifiedGames.filter(g => {
+        const matchesSearch = g.title.toLowerCase().includes(searchQuery.toLowerCase()) || g.description.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesCat = currentCategory === 'All' || g.category === currentCategory;
+        return matchesSearch && matchesCat;
+      });
+
+      if (filtered.length === 0) {
+        gridEl.innerHTML = '<div class="col-span-full text-center py-20 text-gray-500 text-lg">No games match your criteria.</div>';
+        return;
+      }
+
+      gridEl.innerHTML = filtered.map(game => `
+        <div class="bg-gray-900/80 border border-gray-800 rounded-2xl p-5 flex flex-col justify-between hover:border-emerald-500/50 hover:shadow-xl transition-all">
+          <div>
+            <span class="text-xs font-bold uppercase px-2.5 py-1 bg-emerald-950 text-emerald-400 rounded-md border border-emerald-800/40">${game.category}</span>
+            <h3 class="text-xl font-bold text-white mt-3 mb-2">${game.title}</h3>
+            <p class="text-gray-400 text-xs line-clamp-2 mb-6">${game.description}</p>
+          </div>
+          <button onclick="launchGame('${encodeURIComponent(game.embedUrl)}')" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-semibold transition-colors shadow-md">
+            Launch Game
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function encodeUrl(str) {
+      return encodeURIComponent(str.split('').map((char, ind) => ind % 2 ? String.fromCharCode(char.charCodeAt(0) ^ 2) : char).join(''));
+    }
+
+    window.launchGame = function(url) {
+      const decoded = decodeURIComponent(url);
+      launchStealthMode(`/uv/service/${encodeUrl(decoded)}`);
+    };
+
+    document.getElementById('search-input').addEventListener('input', (e) => {
+      searchQuery = e.target.value;
+      renderGames();
+    });
+
+    document.querySelectorAll('.cat-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.cat-btn').forEach(b => {
+          b.classList.remove('bg-emerald-600', 'text-white', 'shadow-lg');
+          b.classList.add('bg-gray-900', 'text-gray-400');
+        });
+        e.target.classList.add('bg-emerald-600', 'text-white', 'shadow-lg');
+        e.target.classList.remove('bg-gray-900', 'text-gray-400');
+        currentCategory = e.target.dataset.cat;
+        renderGames();
+      });
+    });
+
+    renderGames();
+  </script>
+</body>
+</html>
