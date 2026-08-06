@@ -4,9 +4,9 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createBareServer } from '@tomphttp/bare-server-node';
 import wisp from 'wisp-server-node';
+import { uvPath } from '@titaniumnetwork-dev/ultraviolet';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
-// Adjust public folder reference to match standard structure
 const publicDir = join(__dirname, '');
 
 const app = express();
@@ -15,6 +15,9 @@ const bareServer = createBareServer('/bare/');
 const port = process.env.PORT || 3000;
 
 app.use(express.json());
+
+// This tells the server to route requests for UV files to the downloaded package
+app.use('/uv/', express.static(uvPath));
 app.use(express.static(publicDir));
 
 // Master Password Verification Endpoint
@@ -28,7 +31,6 @@ app.post('/api/verify', (req, res) => {
   }
 });
 
-// Fallback route for client-side navigation
 app.get('*', (req, res) => {
   res.sendFile(join(publicDir, 'index.html'));
 });
