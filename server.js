@@ -9,21 +9,21 @@ const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const publicDir = join(__dirname, 'public');
 
 const app = express();
-const server = createServer(app);
+const server = createServer(); // Fixed: Prevents double request handling/header crash
 const bareServer = createBareServer('/bare/');
 const port = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(express.static(publicDir));
 
-// Secure Password Verification (Banana 13th!)
+// Secure Password Verification (Bannana13!)
 app.post('/api/verify', (req, res) => {
   const { password } = req.body;
-  const masterPassword = process.env.SITE_MASTER_PASSWORD || 'Banana 13th!';
+  const masterPassword = process.env.SITE_MASTER_PASSWORD || 'Bannana13!';
   if (password === masterPassword) {
-    res.json({ success: true });
+    return res.json({ success: true });
   } else {
-    res.status(401).json({ success: false, message: 'Invalid password' });
+    return res.status(401).json({ success: false, message: 'Invalid password' });
   }
 });
 
