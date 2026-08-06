@@ -3,7 +3,7 @@ import { createServer } from 'node:http';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createBareServer } from '@tomphttp/bare-server-node';
-import { server as wisp } from '@mercuryworkshop/wisp-js/server';
+import wisp from 'wisp-server-node';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const publicDir = join(__dirname, 'public');
@@ -42,7 +42,7 @@ server.on('request', (req, res) => {
 });
 
 server.on('upgrade', (req, socket, head) => {
-  if (req.url.startsWith('/wisp/')) {
+  if (req.url.endsWith('/wisp/')) {
     wisp.routeRequest(req, socket, head);
   } else if (bareServer.shouldRoute(req)) {
     bareServer.routeUpgrade(req, socket, head);
@@ -52,5 +52,5 @@ server.on('upgrade', (req, socket, head) => {
 });
 
 server.listen(port, () => {
-  console.log(`> The Vault Ultimate Web Service running on port ${port}`);
+  console.log(`> THE-VAULT-STATIC Engine running on port ${port}`);
 });
