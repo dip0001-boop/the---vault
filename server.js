@@ -16,10 +16,10 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.static(publicDir));
 
-// Master Password Verification Endpoint
+// Secure Password Verification (Banana 13th!)
 app.post('/api/verify', (req, res) => {
   const { password } = req.body;
-  const masterPassword = process.env.SITE_MASTER_PASSWORD || 'vault2026';
+  const masterPassword = process.env.SITE_MASTER_PASSWORD || 'Banana 13th!';
   if (password === masterPassword) {
     res.json({ success: true });
   } else {
@@ -27,7 +27,6 @@ app.post('/api/verify', (req, res) => {
   }
 });
 
-// Fallback to index for client-side routing
 app.get('*', (req, res) => {
   res.sendFile(join(publicDir, 'index.html'));
 });
@@ -52,5 +51,5 @@ server.on('upgrade', (req, socket, head) => {
 });
 
 server.listen(port, () => {
-  console.log(`> The Vault Ultimate Web Service running on port ${port}`);
+  console.log(`> THE-VAULT-STATIC Engine running on port ${port}`);
 });
