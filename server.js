@@ -3,30 +3,31 @@ import { createServer } from 'node:http';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createBareServer } from '@tomphttp/bare-server-node';
-import wisp from 'wisp-server-node';
+import { server as wisp } from '@mercuryworkshop/wisp-js/server';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const publicDir = join(__dirname, 'public');
 
 const app = express();
-const server = createServer();
+const server = createServer(app);
 const bareServer = createBareServer('/bare/');
 const port = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(express.static(publicDir));
 
-// Secure Password Verification (Bannana13!)
+// Master Password Verification Endpoint
 app.post('/api/verify', (req, res) => {
   const { password } = req.body;
-  const masterPassword = process.env.SITE_MASTER_PASSWORD || 'Bannana13!';
+  const masterPassword = process.env.SITE_MASTER_PASSWORD || 'vault2026';
   if (password === masterPassword) {
-    return res.json({ success: true });
+    res.json({ success: true });
   } else {
-    return res.status(401).json({ success: false, message: 'Invalid password' });
+    res.status(401).json({ success: false, message: 'Invalid password' });
   }
 });
 
+// Fallback to index for client-side routing
 app.get('*', (req, res) => {
   res.sendFile(join(publicDir, 'index.html'));
 });
@@ -51,5 +52,5 @@ server.on('upgrade', (req, socket, head) => {
 });
 
 server.listen(port, () => {
-  console.log(`> THE-VAULT-STATIC Engine running on port ${port}`);
+  console.log(`> The Vault Ultimate Web Service running on port ${port}`);
 });
