@@ -9,7 +9,7 @@ const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const publicDir = join(__dirname, 'public');
 
 const app = express();
-const server = createServer(); // Fixed: Prevents double request handling/header crash
+const server = createServer();
 const bareServer = createBareServer('/bare/');
 const port = process.env.PORT || 3000;
 
